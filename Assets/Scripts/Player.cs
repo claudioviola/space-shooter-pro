@@ -14,7 +14,11 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _laserContainer;
     [SerializeField]
-    private float _speed = 10f;
+    private float _speed;
+    [SerializeField]
+    private float _boostSpeed = 2f;
+    [SerializeField]
+    private float _normalSpeed = 6f;
     [SerializeField]
     private float _fireRate = 0.1f;
     [SerializeField]
@@ -25,6 +29,7 @@ public class Player : MonoBehaviour
     private bool _isTripleShotEnabled = false;
     [SerializeField]
     private float _powerUpSpeedVal = 5f;
+    private bool _isPowerUpSpeedEnabled = false;
     [SerializeField]
     private AudioClip _laserSoundClip;
     private AudioSource _laserAudioSource;
@@ -91,9 +96,10 @@ public class Player : MonoBehaviour
     }
 
     IEnumerator EnableSpeedPowerUp(){
-        _speed += _powerUpSpeedVal;
+        _isPowerUpSpeedEnabled = true;
         yield return new WaitForSeconds(5f);
-        _speed -= _powerUpSpeedVal;
+        _speed = _normalSpeed;
+        _isPowerUpSpeedEnabled = false;
     }
 
     IEnumerator EnableShieldPowerUp(){
@@ -101,6 +107,18 @@ public class Player : MonoBehaviour
         _shield.SetActive(true);
         yield return new WaitForSeconds(5f);
         _shield.SetActive(false);
+    }
+
+    void UpdateSpeed(){
+        if(_isPowerUpSpeedEnabled){
+            _speed = _normalSpeed + _powerUpSpeedVal;
+            return;
+        }
+        if(Input.GetKey(KeyCode.LeftShift)){
+            _speed = _normalSpeed + _boostSpeed;
+        } else {
+            _speed = _normalSpeed;
+        }
     }
     
     // Start is called before the first frame update
@@ -113,6 +131,7 @@ public class Player : MonoBehaviour
         _uiManager = GameObject.Find("UI_Manager").GetComponent<UIManager>();
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         _mainCamera = GameObject.Find("Main Camera").GetComponent<MainCamera>();
+        _speed = _normalSpeed;
         if(!_spawnManager){
             Debug.LogError("SpawnManager not found!");
         }
@@ -132,6 +151,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateSpeed();
         MoveMe();
         if(Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire){
             Fire();
@@ -149,9 +169,9 @@ public class Player : MonoBehaviour
     }
 
     void MoveMe(){
-
         float hVal = Input.GetAxis("Horizontal");
         float vVal = Input.GetAxis("Vertical");
+
         Vector3 newPos = new Vector3(hVal, vVal, 0);
         transform.Translate(newPos * _speed * Time.deltaTime);
         
