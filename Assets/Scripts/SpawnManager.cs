@@ -56,7 +56,8 @@ public class SpawnManager : MonoBehaviour
     private IEnumerator PowerUpRoutine(){
         yield return new WaitForSeconds(4f);
         while(isSpawningPowerUp){
-            GameObject newPowerUp = _powerUps[Random.Range(0, _powerUps.Length-1)];
+            int powerUpId = Random.Range(0, _powerUps.Length-1);
+            GameObject newPowerUp = _powerUps[powerUpId];
             // Instantiate utilizzo con il passaggio del container come secondo parametro 
             // https://docs.unity3d.com/ScriptReference/Object.Instantiate.html
             // si evita il current.transform.parent = _powerUpContainer.transform;

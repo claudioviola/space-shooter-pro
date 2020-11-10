@@ -10,7 +10,8 @@ public class Asteroid : MonoBehaviour
 
     [SerializeField]
     private GameObject _explosion;
-    
+    private bool _isDestroing = false;
+
     private AudioSource _audioSource;
     private GameManager _gameManager;
     private Renderer _renderer;
@@ -37,18 +38,19 @@ public class Asteroid : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.tag == "Laser"){
+        if(other.tag == "Laser" && !_isDestroing){
             Destroy(other.gameObject);
             StartCoroutine("DestroyMe");
         }
 
-         if(other.tag == "Player"){
+         if(other.tag == "Player" && !_isDestroing){
             other.GetComponent<Player>().OnHitMe();
             StartCoroutine("DestroyMe");
         }
     }
 
     IEnumerator DestroyMe(){
+        _isDestroing = true;
         _audioSource.Play();
         GameObject explosion = Instantiate(_explosion, this.gameObject.transform);
         yield return new WaitForSeconds(0.5f);

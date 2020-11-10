@@ -57,7 +57,11 @@ public class Player : MonoBehaviour
                 break;
             case "SHIELD":
                 StartCoroutine("EnableShieldPowerUp");
-                break; 
+                break;
+            case "HEALTH":
+                Debug.Log("Health Power Up");
+                AddLive();
+                break;                
             default:
                 Debug.Log("On Collect Default");
                 break;
@@ -86,6 +90,13 @@ public class Player : MonoBehaviour
         if(_lives < 1){
             Destroy(this.gameObject);
             _spawnManager.OnPlayerDeath();
+        }
+    }
+
+    private void AddLive(){
+        if(_lives < 3){
+            _lives++;
+            _uiManager.OnPlayerCollectHealthPowerUp(_lives);
         }
     }
 

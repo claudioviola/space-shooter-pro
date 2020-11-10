@@ -902,7 +902,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 535364803}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.783, y: -2.68, z: 0}
+  m_LocalPosition: {x: 6.05, y: -2.42, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children:
   - {fileID: 1569494208}
@@ -1570,8 +1570,9 @@ MonoBehaviour:
   _powerUpContainer: {fileID: 1046643079}
   _powerUps:
   - {fileID: 5943567970508145818, guid: 58c2ad070c89d40f8aa839b52a66987d, type: 3}
-  - {fileID: 8769571007648968696, guid: c5062aeb9f85c4144a616b8cb427891f, type: 3}
+  - {fileID: 8631262716475294982, guid: b18435ca8ab844ff596cc59747e525fe, type: 3}
   - {fileID: 8880828558459777864, guid: fb69fd6bfe70b4d61994c9f01a58adf2, type: 3}
+  - {fileID: 8769571007648968696, guid: c5062aeb9f85c4144a616b8cb427891f, type: 3}
   _spawnEnemyTime: 4
   _minPowerUpTime: 3
   _maxPowerUpTime: 7

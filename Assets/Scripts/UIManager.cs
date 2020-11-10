@@ -25,7 +25,6 @@ public class UIManager : MonoBehaviour
     }
 
     public void OnPlayerHit(int livesLeft){
-        Debug.Log("OnPlayerHit:"+livesLeft);
         livesLeft = livesLeft > 0 ? livesLeft : 0;
         _livesDisplayer.sprite = _livesSprite[livesLeft];
         if(livesLeft < 1){
@@ -33,6 +32,10 @@ public class UIManager : MonoBehaviour
             _gameOverRoutine = StartCoroutine(GameOverRoutine());
             _gameManager.OnGameOver();
         }
+    }
+
+    public void OnPlayerCollectHealthPowerUp(int livesLeft){
+        _livesDisplayer.sprite = _livesSprite[livesLeft];
     }
 
     // Start is called before the first frame update
