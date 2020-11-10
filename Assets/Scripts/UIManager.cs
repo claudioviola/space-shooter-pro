@@ -7,6 +7,9 @@ public class UIManager : MonoBehaviour
 {
 
     [SerializeField]
+    private GameObject _shieldIndicator;
+
+    [SerializeField]
     private Sprite[] _livesSprite;
     [SerializeField]
     private Text _scoreTxt;
@@ -34,8 +37,23 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void OnShieldHit(int shieldLeft){
+        Transform currentShield = _shieldIndicator.transform.GetChild(shieldLeft);
+        currentShield.gameObject.GetComponent<Image>().color =  new Color(0.5f, 0.5f, 0.5f, 1f);
+        if(shieldLeft < 1){
+            _shieldIndicator.SetActive(false);
+        }
+    }
+
     public void OnPlayerCollectHealthPowerUp(int livesLeft){
         _livesDisplayer.sprite = _livesSprite[livesLeft];
+    }
+
+    public void OnPlayerCollectShieldPowerUp(int shieldLeft){
+        foreach(Transform shield in _shieldIndicator.transform){
+            shield.GetComponent<Image>().color =  new Color(1f, 1f, 1f, 1f);
+        }
+        _shieldIndicator.SetActive(true);
     }
 
     // Start is called before the first frame update
@@ -44,6 +62,7 @@ public class UIManager : MonoBehaviour
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _livesDisplayer = GameObject.Find("Lives_Displayer").GetComponent<Image>();
         _gameOverContainer.SetActive(false);
+        _shieldIndicator.SetActive(false);
         UpdateScore(0);
         if(!_gameManager){
             Debug.LogError("Game_Manager not found!");

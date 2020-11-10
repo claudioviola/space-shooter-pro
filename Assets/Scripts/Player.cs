@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.1f;
     [SerializeField]
     private int _lives = 3;
+    private int _shieldStrength = 3;
     [SerializeField]
     private float _laserOffest = -0.8f;
     [SerializeField]
@@ -56,10 +57,12 @@ public class Player : MonoBehaviour
                 StartCoroutine("EnableSpeedPowerUp");
                 break;
             case "SHIELD":
-                StartCoroutine("EnableShieldPowerUp");
+                // StartCoroutine("EnableShieldPowerUp");
+                _shieldStrength = 3;
+                _shield.SetActive(true);
+                _uiManager.OnPlayerCollectShieldPowerUp(_shieldStrength);
                 break;
             case "HEALTH":
-                Debug.Log("Health Power Up");
                 AddLive();
                 break;                
             default:
@@ -75,7 +78,7 @@ public class Player : MonoBehaviour
 
     public void OnHitMe(){
         if(_shield.activeSelf){
-            _shield.SetActive(false);
+            UpdateShield();
             return;
         }
         _mainCamera.ShakeMe();
@@ -90,6 +93,14 @@ public class Player : MonoBehaviour
         if(_lives < 1){
             Destroy(this.gameObject);
             _spawnManager.OnPlayerDeath();
+        }
+    }
+
+    private void UpdateShield(){
+        _shieldStrength--;
+        _uiManager.OnShieldHit(_shieldStrength);
+        if(_shieldStrength < 1){
+            _shield.SetActive(false);
         }
     }
 
@@ -111,13 +122,6 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(5f);
         _speed = _normalSpeed;
         _isPowerUpSpeedEnabled = false;
-    }
-
-    IEnumerator EnableShieldPowerUp(){
-        Debug.Log("EnableShieldPowerUp");
-        _shield.SetActive(true);
-        yield return new WaitForSeconds(5f);
-        _shield.SetActive(false);
     }
 
     void UpdateSpeed(){

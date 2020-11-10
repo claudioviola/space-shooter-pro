@@ -16,6 +16,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float _spawnEnemyTime = 2f;
     [SerializeField]
+    private float _spawnPowerUpTime = 2f;
+    [SerializeField]
     private float _minPowerUpTime = 3f;
     [SerializeField]
     private float _maxPowerUpTime = 7f;
@@ -54,7 +56,7 @@ public class SpawnManager : MonoBehaviour
     }
 
     private IEnumerator PowerUpRoutine(){
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(_spawnPowerUpTime);
         while(isSpawningPowerUp){
             int powerUpId = Random.Range(0, _powerUps.Length-1);
             GameObject newPowerUp = _powerUps[powerUpId];
