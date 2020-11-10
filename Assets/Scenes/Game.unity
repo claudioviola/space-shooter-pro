@@ -358,8 +358,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 65660164}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.736, z: 0}
-  m_LocalScale: {x: 1.0766636, y: 1.1362908, z: 1}
+  m_LocalPosition: {x: -0, y: 0.736, z: 0}
+  m_LocalScale: {x: 1.1449932, y: 1.1362908, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -442,6 +442,9 @@ GameObject:
   - component: {fileID: 95400974}
   - component: {fileID: 95400973}
   - component: {fileID: 95400976}
+  - component: {fileID: 95400978}
+  - component: {fileID: 95400977}
+  - component: {fileID: 95400979}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -574,6 +577,56 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!95 &95400977
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95400972}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!320 &95400978
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95400972}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 39d54fff30bb0416ab25d69212de8888, type: 2}
+  m_InitialState: 0
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -6661233347686014373, guid: 39d54fff30bb0416ab25d69212de8888, type: 2}
+    value: {fileID: 95400977}
+  m_ExposedReferences:
+    m_References: []
+--- !u!114 &95400979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95400972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c80d9cfcd2ead460e9a9736765ec8946, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &142135864
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,7 +734,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382be7c8ead5846298d4c6785e93224b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnManager: {fileID: 887829856}
 --- !u!4 &307256255
 Transform:
   m_ObjectHideFlags: 0

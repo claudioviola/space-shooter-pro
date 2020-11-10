@@ -28,13 +28,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     private AudioClip _laserSoundClip;
     private AudioSource _laserAudioSource;
-
     [SerializeField]
     private GameObject _damageLeft;
     [SerializeField]
     private GameObject _damageRight;
     private UIManager _uiManager;
     private SpawnManager _spawnManager;
+    private MainCamera _mainCamera;
     private float _canFire = 0f;
     private float _initYPos = -3.5f;
     private float _limitRx = 11f;
@@ -69,6 +69,7 @@ public class Player : MonoBehaviour
             _shield.SetActive(false);
             return;
         }
+        _mainCamera.ShakeMe();
         _lives--;
         _uiManager.OnPlayerHit(_lives);
         if(_lives == 2){
@@ -111,11 +112,15 @@ public class Player : MonoBehaviour
         _laserAudioSource = gameObject.GetComponent<AudioSource>();
         _uiManager = GameObject.Find("UI_Manager").GetComponent<UIManager>();
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        _mainCamera = GameObject.Find("Main Camera").GetComponent<MainCamera>();
         if(!_spawnManager){
             Debug.LogError("SpawnManager not found!");
         }
         if(!_uiManager){
             Debug.LogError("UI_Manager not found!");
+        }
+        if(!_mainCamera){
+            Debug.LogError("Main Camera not found!");
         }
         if(!_laserAudioSource){
             Debug.LogError("AudioSource component not found in Player!");
