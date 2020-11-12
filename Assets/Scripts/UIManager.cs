@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private GameObject _shieldIndicator;
-
+    
     [SerializeField]
     private Sprite[] _livesSprite;
     [SerializeField]
@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     private int _scoreVal;
     private Coroutine _gameOverRoutine;
     private GameManager _gameManager;
+    private Slider _thrusterSlider;
 
     public void OnEnemyDestroied(int points){
         _scoreVal += points;
@@ -56,16 +57,27 @@ public class UIManager : MonoBehaviour
         _shieldIndicator.SetActive(true);
     }
 
+    public void OnThrusterChargeUpdate(float val){
+        _thrusterSlider.value = val;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _livesDisplayer = GameObject.Find("Lives_Displayer").GetComponent<Image>();
+        _thrusterSlider = GameObject.Find("Thruster_Bar").GetComponent<Slider>();
         _gameOverContainer.SetActive(false);
         _shieldIndicator.SetActive(false);
         UpdateScore(0);
         if(!_gameManager){
             Debug.LogError("Game_Manager not found!");
+        }
+        if(!_thrusterSlider){
+            Debug.LogError("Thruster_Bar not found!");
+        }
+        if(!_livesDisplayer){
+            Debug.LogError("Lives_Displayer not found!");
         }
     }
 

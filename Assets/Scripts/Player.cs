@@ -4,49 +4,51 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    
     [SerializeField]
-    private GameObject _laser;
+    private Thruster        _thruster;
     [SerializeField]
-    private GameObject _shield;
+    private GameObject      _laser;
     [SerializeField]
-    private GameObject _tripleShot;
+    private GameObject      _shield;
     [SerializeField]
-    private GameObject _laserContainer;
+    private GameObject      _tripleShot;
     [SerializeField]
-    private float _speed;
+    private GameObject      _laserContainer;
     [SerializeField]
-    private float _boostSpeed = 2f;
+    private float           _speed;
     [SerializeField]
-    private float _normalSpeed = 6f;
+    private float           _boostSpeed = 2f;
     [SerializeField]
-    private float _fireRate = 0.1f;
+    private float           _normalSpeed = 6f;
     [SerializeField]
-    private int _lives = 3;
-    private int _shieldStrength = 3;
+    private float           _fireRate = 0.1f;
     [SerializeField]
-    private float _laserOffest = -0.8f;
+    private int             _lives = 3;
+    private int             _shieldStrength = 3;
     [SerializeField]
-    private bool _isTripleShotEnabled = false;
+    private float           _laserOffest = -0.8f;
     [SerializeField]
-    private float _powerUpSpeedVal = 5f;
-    private bool _isPowerUpSpeedEnabled = false;
+    private bool            _isTripleShotEnabled = false;
     [SerializeField]
-    private AudioClip _laserSoundClip;
-    private AudioSource _laserAudioSource;
+    private float           _powerUpSpeedVal = 5f;
+    private bool            _isPowerUpSpeedEnabled = false;
     [SerializeField]
-    private GameObject _damageLeft;
+    private AudioClip       _laserSoundClip;
+    private AudioSource     _laserAudioSource;
     [SerializeField]
-    private GameObject _damageRight;
-    private UIManager _uiManager;
-    private SpawnManager _spawnManager;
-    private MainCamera _mainCamera;
-    private float _canFire = 0f;
-    private float _initYPos = -3.5f;
-    private float _limitRx = 11f;
-    private float _limitLx = -11f;
-    private float _limitTop = 6f;
-    private float _limitDown = -4f;
+    private GameObject      _damageLeft;
+    [SerializeField]
+    private GameObject      _damageRight;
+    private UIManager       _uiManager;
+    private SpawnManager    _spawnManager;
+    private MainCamera      _mainCamera;
+    private float           _canFire = 0f;
+    private float           _initYPos = -3.5f;
+    private float           _limitRx = 11f;
+    private float           _limitLx = -11f;
+    private float           _limitTop = 6f;
+    private float           _limitDown = -4f;    
 
     public void OnCollect(string type){
         switch(type){
@@ -84,12 +86,7 @@ public class Player : MonoBehaviour
         _mainCamera.ShakeMe();
         _lives--;
         _uiManager.OnPlayerHit(_lives);
-        if(_lives == 2){
-            _damageLeft.SetActive(true);
-        }
-        if(_lives == 1){
-            _damageRight.SetActive(true);
-        }
+        UpdateDamage();
         if(_lives < 1){
             Destroy(this.gameObject);
             _spawnManager.OnPlayerDeath();
@@ -108,6 +105,21 @@ public class Player : MonoBehaviour
         if(_lives < 3){
             _lives++;
             _uiManager.OnPlayerCollectHealthPowerUp(_lives);
+            UpdateDamage();
+        }
+    }
+
+    private void UpdateDamage(){
+        if(_lives == 3){
+            _damageLeft.SetActive(false);
+            _damageRight.SetActive(false);
+        }
+        if(_lives == 2){
+            _damageLeft.SetActive(true);
+            _damageRight.SetActive(false);
+        }
+        if(_lives == 1){
+            _damageRight.SetActive(true);
         }
     }
 
@@ -125,15 +137,23 @@ public class Player : MonoBehaviour
     }
 
     void UpdateSpeed(){
+        _uiManager.OnThrusterChargeUpdate(_thruster.getLeftPercantage());
+        if(_thruster.getCharge() <= 0){
+            _speed = 2f;
+            return;
+        }
+
         if(_isPowerUpSpeedEnabled){
             _speed = _normalSpeed + _powerUpSpeedVal;
             return;
         }
+
         if(Input.GetKey(KeyCode.LeftShift)){
             _speed = _normalSpeed + _boostSpeed;
-        } else {
-            _speed = _normalSpeed;
-        }
+            return;
+        } 
+
+        _speed = _normalSpeed;
     }
     
     // Start is called before the first frame update
