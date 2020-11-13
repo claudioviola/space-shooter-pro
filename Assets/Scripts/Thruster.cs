@@ -25,6 +25,10 @@ public class Thruster : MonoBehaviour
     public float getCharge(){
         return _currentThrusterCharge;
     }
+
+    public void TurnOff(){
+        gameObject.SetActive(false);
+    }
     
     
     public float getLeftPercantage(){
@@ -32,6 +36,11 @@ public class Thruster : MonoBehaviour
     }
 
     public void UpdateChargeThruster(){
+        if(!gameObject.activeSelf){
+            StopCoroutine("RechargeThursterRoutine");
+            return;
+        }
+
         if(_lastPosition != transform.position){
             _currentThrusterCharge = 
                 _currentThrusterCharge - _thrusterChargeTick > 0 
@@ -72,7 +81,7 @@ public class Thruster : MonoBehaviour
     void Update()
     {
         UpdateChargeThruster();
-        print("_currentThrusterCharge"+_currentThrusterCharge);
+        //print("_currentThrusterCharge"+_currentThrusterCharge);
         if(_currentThrusterCharge < _thrusterFlickeringIndicator){
             if(Time.time > _canFlickering && _spriteRender.enabled){
                 _canFlickering = Time.time + _timeFlickering;

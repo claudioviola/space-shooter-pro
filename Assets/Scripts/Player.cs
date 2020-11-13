@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    
+
+    [SerializeField]
+    private GameObject      _explosion;
     [SerializeField]
     private Thruster        _thruster;
     [SerializeField]
@@ -35,7 +37,9 @@ public class Player : MonoBehaviour
     private bool            _isPowerUpSpeedEnabled = false;
     [SerializeField]
     private AudioClip       _laserSoundClip;
-    private AudioSource     _laserAudioSource;
+    [SerializeField]
+    private AudioClip       _explosionSoundClip;
+    private AudioSource     _audioSource;
     [SerializeField]
     private GameObject      _damageLeft;
     [SerializeField]
@@ -49,6 +53,7 @@ public class Player : MonoBehaviour
     private float           _limitLx = -11f;
     private float           _limitTop = 6f;
     private float           _limitDown = -4f;    
+    private bool           _isDestroying = false;
 
     public void OnCollect(string type){
         switch(type){
@@ -79,6 +84,9 @@ public class Player : MonoBehaviour
     }
 
     public void OnHitMe(){
+        if(_isDestroying){
+            return;
+        }
         if(_shield.activeSelf){
             UpdateShield();
             return;
@@ -88,7 +96,8 @@ public class Player : MonoBehaviour
         _uiManager.OnPlayerHit(_lives);
         UpdateDamage();
         if(_lives < 1){
-            Destroy(this.gameObject);
+            // PlayDestroying();
+            StartCoroutine("PlayDestroying");
             _spawnManager.OnPlayerDeath();
         }
     }
@@ -121,6 +130,21 @@ public class Player : MonoBehaviour
         if(_lives == 1){
             _damageRight.SetActive(true);
         }
+    }
+
+    IEnumerator PlayDestroying(){
+    // void PlayDestroying(){
+        AudioSource.PlayClipAtPoint(_explosionSoundClip, transform.position);
+        _isDestroying = true;
+        Destroy(this.gameObject, 2.3f);
+        transform.GetComponent<BoxCollider2D>().enabled = false;
+        _explosion.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        transform.GetComponent<SpriteRenderer>().enabled = false;
+        _thruster.TurnOff();
+        yield return new WaitForSeconds(1f);
+        _damageLeft.SetActive(false);
+        _damageRight.SetActive(false);
     }
 
     IEnumerator EnableTriplePowerUp(){
@@ -159,10 +183,12 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _isDestroying = false;
+        _explosion.SetActive(false);
         _damageLeft.SetActive(false);
         _damageRight.SetActive(false);
         transform.position = new Vector3(0, _initYPos, 0);
-        _laserAudioSource = gameObject.GetComponent<AudioSource>();
+        _audioSource = gameObject.GetComponent<AudioSource>();
         _uiManager = GameObject.Find("UI_Manager").GetComponent<UIManager>();
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         _mainCamera = GameObject.Find("Main Camera").GetComponent<MainCamera>();
@@ -176,16 +202,20 @@ public class Player : MonoBehaviour
         if(!_mainCamera){
             Debug.LogError("Main Camera not found!");
         }
-        if(!_laserAudioSource){
+        if(!_audioSource){
             Debug.LogError("AudioSource component not found in Player!");
         } else {
-            _laserAudioSource.clip = _laserSoundClip;
+            _audioSource.clip = _laserSoundClip;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(_isDestroying){
+            return;
+        }
+
         UpdateSpeed();
         MoveMe();
         if(Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire){
@@ -194,7 +224,7 @@ public class Player : MonoBehaviour
     }
 
     void Fire(){
-        _laserAudioSource.Play();
+        _audioSource.Play();
         _canFire = Time.time + _fireRate;
         float initY = _isTripleShotEnabled ? transform.position.y : transform.position.y + _laserOffest;
         Vector3 pos = new Vector3(transform.position.x, initY, 0);
