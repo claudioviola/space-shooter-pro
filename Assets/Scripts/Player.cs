@@ -133,8 +133,7 @@ public class Player : MonoBehaviour
     }
 
     IEnumerator PlayDestroying(){
-    // void PlayDestroying(){
-        AudioSource.PlayClipAtPoint(_explosionSoundClip, transform.position);
+        AudioSource.PlayClipAtPoint(_explosionSoundClip, _mainCamera.transform.position);
         _isDestroying = true;
         Destroy(this.gameObject, 2.3f);
         transform.GetComponent<BoxCollider2D>().enabled = false;
