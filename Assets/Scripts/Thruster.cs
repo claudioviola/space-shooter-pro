@@ -65,7 +65,7 @@ public class Thruster : MonoBehaviour
             _currentThrusterCharge = _currentThrusterCharge + _slotCharge < 100f 
                 ? _currentThrusterCharge + _slotCharge 
                 : 100f;
-            print("_currentThrusterCharge"+_currentThrusterCharge);
+            // print("_currentThrusterCharge"+_currentThrusterCharge);
             yield return new WaitForSeconds(0.5f);
         }
     }

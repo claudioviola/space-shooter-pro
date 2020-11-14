@@ -60,6 +60,10 @@ public class Player : MonoBehaviour
 
     public void OnCollect(string type){
         switch(type){
+            case "AMMO":
+                _ammoCount += _ammoCharge;
+                _uiManager.UpdateAmmoCount(_ammoCount);
+                break;
             case "TRIPLE":
                 _ammoCount = _ammoCharge;
                 _uiManager.UpdateAmmoCount(_ammoCount);
@@ -242,6 +246,10 @@ public class Player : MonoBehaviour
             _uiManager.UpdateAmmoCount(_ammoCount);
             GameObject newLaser = Instantiate(_laser, pos, Quaternion.identity, _laserContainer.transform);
             newLaser.transform.parent = _laserContainer.transform;
+        }
+
+        if(_ammoCount <= 5){
+            _spawnManager.NeedAmmo();
         }
 
         

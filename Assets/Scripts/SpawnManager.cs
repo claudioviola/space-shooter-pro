@@ -24,7 +24,13 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private bool isSpawningEnemy = true;
     [SerializeField]
-    private bool isSpawningPowerUp = true;    
+    private bool isSpawningPowerUp = true;
+    private bool shouldSpawnAmmo = false;
+
+    public void NeedAmmo(){
+        print("NeedAmmo");
+        shouldSpawnAmmo = true;
+    }
     
     public void OnPlayerDeath(){
         StopCoroutine("EnemyRoutine");
@@ -42,6 +48,7 @@ public class SpawnManager : MonoBehaviour
         
     }
 
+    //Called by GameManager
     public void StartMe(){
         initMe();
     }
@@ -58,13 +65,21 @@ public class SpawnManager : MonoBehaviour
     private IEnumerator PowerUpRoutine(){
         yield return new WaitForSeconds(_spawnPowerUpTime);
         while(isSpawningPowerUp){
-            int powerUpId = Random.Range(0, _powerUps.Length-1);
+            int powerUpId = shouldSpawnAmmo ? 4 : Random.Range(0, _powerUps.Length-1);
+
+            print("shouldSpawnAmmo"+shouldSpawnAmmo);
+            print("powerUpId"+powerUpId);
+
             GameObject newPowerUp = _powerUps[powerUpId];
             // Instantiate utilizzo con il passaggio del container come secondo parametro 
             // https://docs.unity3d.com/ScriptReference/Object.Instantiate.html
             // si evita il current.transform.parent = _powerUpContainer.transform;
             GameObject current = Instantiate(newPowerUp, _powerUpContainer.transform);
             yield return new WaitForSeconds(Random.Range(_minPowerUpTime, _maxPowerUpTime));
+
+            if(shouldSpawnAmmo && powerUpId == 4){
+                shouldSpawnAmmo = false;
+            }
         }
     }
 }
