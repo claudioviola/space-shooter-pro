@@ -122,6 +122,14 @@ public class Enemy : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+        if(other.tag == "Super_Laser"){
+            _audioSource.Play();
+            _isDestroying = true;
+            _player.OnEnemyDestroy(_points);
+            _animController.SetTrigger("OnEnemyDeath");
+            Destroy(this.gameObject, 2.3f);
+        }
+
         if(other.tag == "Player"){
             _audioSource.Play();
             _isDestroying = true;

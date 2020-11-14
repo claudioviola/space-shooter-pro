@@ -36,6 +36,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     private bool            _isTripleShotEnabled = false;
     [SerializeField]
+    private GameObject      _superLaser;
+    [SerializeField]
+    private bool            _isSuperLaserEnabled = false;
+    [SerializeField]
+    private float            _sLaserTime = 5f;
+    private float            _sLaserCanFire;
+    [SerializeField]
     private float           _powerUpSpeedVal = 5f;
     private bool            _isPowerUpSpeedEnabled = false;
     [SerializeField]
@@ -60,6 +67,9 @@ public class Player : MonoBehaviour
 
     public void OnCollect(string type){
         switch(type){
+            case "SUPER_LASER":
+                _sLaserCanFire = Time.time + _sLaserTime;
+                break;
             case "AMMO":
                 _ammoCount += _ammoCharge;
                 _uiManager.UpdateAmmoCount(_ammoCount);
@@ -80,7 +90,7 @@ public class Player : MonoBehaviour
                 break;
             case "HEALTH":
                 AddLive();
-                break;                
+                break;        
             default:
                 Debug.Log("On Collect Default");
                 break;
@@ -236,28 +246,27 @@ public class Player : MonoBehaviour
     void Fire(){
         _audioSource.Play();
         _canFire = Time.time + _fireRate;
-        float initY = _isTripleShotEnabled ? transform.position.y : transform.position.y + _laserOffest;
-        Vector3 pos = new Vector3(transform.position.x, initY, 0);
-        if(_isTripleShotEnabled){
-            GameObject newLaser = Instantiate(_tripleShot, pos, Quaternion.identity, _laserContainer.transform);
-            newLaser.transform.parent = _laserContainer.transform;
+            
+        if(_isTripleShotEnabled && _sLaserCanFire < Time.time){
+            Vector3 pos = new Vector3(transform.position.x, transform.position.y , 0);
+            GameObject tripleLaser = Instantiate(_tripleShot, pos, Quaternion.identity, _laserContainer.transform);
+            tripleLaser.transform.parent = _laserContainer.transform;
+        }
+        else if(_isSuperLaserEnabled || _sLaserCanFire > Time.time){
+            // print(transform.position);
+            GameObject superLaser = Instantiate(_superLaser, transform.position, Quaternion.identity);
+            return;
         } else {
+            Vector3 pos = new Vector3(transform.position.x, transform.position.y + _laserOffest , 0);
             _ammoCount--;
             _uiManager.UpdateAmmoCount(_ammoCount);
             GameObject newLaser = Instantiate(_laser, pos, Quaternion.identity, _laserContainer.transform);
             newLaser.transform.parent = _laserContainer.transform;
         }
-
+        
         if(_ammoCount <= 5){
             _spawnManager.NeedAmmo();
         }
-
-        
-        /* float initY = _isTripleShotEnabled ? transform.position.y : transform.position.y + _laserOffest;
-        Vector3 pos = new Vector3(transform.position.x, initY, 0);
-        GameObject newShot = _isTripleShotEnabled ? _tripleShot : _laser;
-        GameObject newLaser = Instantiate(newShot, pos, Quaternion.identity, _laserContainer.transform);
-        newLaser.transform.parent = _laserContainer.transform; */
     }
 
     void MoveMe(){

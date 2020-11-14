@@ -8,11 +8,15 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemy;
     [SerializeField]
+    private GameObject _superLaserPowerUp;
+    [SerializeField]
     private GameObject _enemiesContainer;
     [SerializeField]
     private GameObject _powerUpContainer;
     [SerializeField]
     private GameObject[] _powerUps;
+    [SerializeField]
+    private float _superLaserPowerUpTime = 30f;
     [SerializeField]
     private float _spawnEnemyTime = 2f;
     [SerializeField]
@@ -35,11 +39,13 @@ public class SpawnManager : MonoBehaviour
     public void OnPlayerDeath(){
         StopCoroutine("EnemyRoutine");
         StopCoroutine("PowerUpRoutine");
+        StopCoroutine("SuperLaserPowerUpRoutine");
     }
 
     public void initMe(){
         StartCoroutine("EnemyRoutine");
         StartCoroutine("PowerUpRoutine");
+        StartCoroutine("SuperLaserPowerUpRoutine");
     }
 
     // Start is called before the first frame update
@@ -62,13 +68,16 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    private IEnumerator SuperLaserPowerUpRoutine(){
+        while(true){
+            yield return new WaitForSeconds(_superLaserPowerUpTime);
+            Instantiate(_superLaserPowerUp, _powerUpContainer.transform);
+        }
+    }
     private IEnumerator PowerUpRoutine(){
         yield return new WaitForSeconds(_spawnPowerUpTime);
         while(isSpawningPowerUp){
             int powerUpId = shouldSpawnAmmo ? 4 : Random.Range(0, _powerUps.Length-1);
-
-            print("shouldSpawnAmmo"+shouldSpawnAmmo);
-            print("powerUpId"+powerUpId);
 
             GameObject newPowerUp = _powerUps[powerUpId];
             // Instantiate utilizzo con il passaggio del container come secondo parametro 
