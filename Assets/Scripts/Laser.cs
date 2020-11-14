@@ -9,6 +9,7 @@ public class Laser : MonoBehaviour
     private float _speed = 12f;
     private float _limitUp = 7.5f;
     private float _limitDown = -7.5f;
+    [SerializeField]
     private bool _isEnemyLaser = false;
 
     public void SetEnemyLaser(){
@@ -44,7 +45,7 @@ public class Laser : MonoBehaviour
         transform.Translate(newPos);
         
         if(transform.position.y < _limitDown){
-            if(transform.parent.name.Contains("TripleShot")){
+            if(transform.parent && transform.parent.name.Contains("TripleShot")){
                 Destroy(transform.parent.gameObject);
             }
             Destroy(this.gameObject);
@@ -55,7 +56,7 @@ public class Laser : MonoBehaviour
         if(other.tag == "Player" && _isEnemyLaser){
             Player player = other.GetComponent<Player>();
             player.OnHitMe();
-            Destroy(this.gameObject.transform.parent.gameObject);
+            Destroy(this.gameObject);
         }
     }
 }
