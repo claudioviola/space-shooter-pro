@@ -8,7 +8,10 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private GameObject _shieldIndicator;
-    
+    [SerializeField]
+    private Text _ammoCount;
+    [SerializeField]
+    private Text _ammoWarningTxt;
     [SerializeField]
     private Sprite[] _livesSprite;
     [SerializeField]
@@ -61,12 +64,30 @@ public class UIManager : MonoBehaviour
         _thrusterSlider.value = val;
     }
 
+    public void UpdateAmmoCount(int ammo){
+        _ammoCount.text = "" + ammo;
+        if(ammo < 1){
+            _ammoWarningTxt.enabled = true;
+        } else {
+            _ammoWarningTxt.enabled = false;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _livesDisplayer = GameObject.Find("Lives_Displayer").GetComponent<Image>();
         _thrusterSlider = GameObject.Find("Thruster_Bar").GetComponent<Slider>();
+        
+        /*
+            _ammoWarningTxt = transform.Find("Ammo_Warning_Text").GetComponent<Text>();
+            _ammoCount = transform.Find("Ammo_Count").GetComponent<Text>();
+            Using this solution bring an issue because Player call 
+            UpdateAmmoCount before the instantiation
+        */
+        
+        _ammoWarningTxt.enabled = false;
         _gameOverContainer.SetActive(false);
         _shieldIndicator.SetActive(false);
         UpdateScore(0);
@@ -78,6 +99,9 @@ public class UIManager : MonoBehaviour
         }
         if(!_livesDisplayer){
             Debug.LogError("Lives_Displayer not found!");
+        }
+        if(!_ammoCount){
+            Debug.LogError("Ammo_Count not found in UI Manager");
         }
     }
 

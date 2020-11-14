@@ -5,6 +5,9 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
+    [SerializeField]     
+    private int             _ammoCharge = 15;
+    private int             _ammoCount = 15;
     [SerializeField]
     private GameObject      _explosion;
     [SerializeField]
@@ -58,6 +61,8 @@ public class Player : MonoBehaviour
     public void OnCollect(string type){
         switch(type){
             case "TRIPLE":
+                _ammoCount = _ammoCharge;
+                _uiManager.UpdateAmmoCount(_ammoCount);
                 StartCoroutine("EnableTriplePowerUp");
                 break;
             case "SPEED":
@@ -182,6 +187,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _ammoCount = _ammoCharge;
         _isDestroying = false;
         _explosion.SetActive(false);
         _damageLeft.SetActive(false);
@@ -206,6 +212,7 @@ public class Player : MonoBehaviour
         } else {
             _audioSource.clip = _laserSoundClip;
         }
+        _uiManager.UpdateAmmoCount(_ammoCount);
     }
 
     // Update is called once per frame
@@ -217,7 +224,7 @@ public class Player : MonoBehaviour
 
         UpdateSpeed();
         MoveMe();
-        if(Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire){
+        if(_ammoCount > 0 && Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire){
             Fire();
         }
     }
@@ -227,9 +234,22 @@ public class Player : MonoBehaviour
         _canFire = Time.time + _fireRate;
         float initY = _isTripleShotEnabled ? transform.position.y : transform.position.y + _laserOffest;
         Vector3 pos = new Vector3(transform.position.x, initY, 0);
+        if(_isTripleShotEnabled){
+            GameObject newLaser = Instantiate(_tripleShot, pos, Quaternion.identity, _laserContainer.transform);
+            newLaser.transform.parent = _laserContainer.transform;
+        } else {
+            _ammoCount--;
+            _uiManager.UpdateAmmoCount(_ammoCount);
+            GameObject newLaser = Instantiate(_laser, pos, Quaternion.identity, _laserContainer.transform);
+            newLaser.transform.parent = _laserContainer.transform;
+        }
+
+        
+        /* float initY = _isTripleShotEnabled ? transform.position.y : transform.position.y + _laserOffest;
+        Vector3 pos = new Vector3(transform.position.x, initY, 0);
         GameObject newShot = _isTripleShotEnabled ? _tripleShot : _laser;
         GameObject newLaser = Instantiate(newShot, pos, Quaternion.identity, _laserContainer.transform);
-        newLaser.transform.parent = _laserContainer.transform;
+        newLaser.transform.parent = _laserContainer.transform; */
     }
 
     void MoveMe(){
