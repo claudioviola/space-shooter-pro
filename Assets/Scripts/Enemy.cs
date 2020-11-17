@@ -14,6 +14,11 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemyLaser;
     [SerializeField]
+    private GameObject _enemyShield;
+    [SerializeField]
+    private bool _hasShield = false;
+    private UIManager _uiManager;
+    [SerializeField]
     private float _fireRate = 1f;
     private float _canFire = -1f;
     private float _awakeTime;
@@ -30,10 +35,12 @@ public class Enemy : MonoBehaviour
     private Player _player;
 
     void Start() {
-        initMe();
+        _enemyShield.SetActive(false);
         _audioSource = gameObject.GetComponent<AudioSource>();
         _animController = gameObject.GetComponent<Animator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
+        _uiManager = GameObject.Find("UI_Manager").GetComponent<UIManager>();
+        initMe();
         if(!_player){
             Debug.LogError("Player script not available");
         }
@@ -46,6 +53,9 @@ public class Enemy : MonoBehaviour
     }
 
     void initMe(){
+        if(_uiManager.ScoreVal > 30 && Random.Range(0,2) == 1){
+            _enemyShield.SetActive(true);
+        }    
         _canFire = Time.time + Random.Range(0.5f, 1f);
         _isWave = Random.Range(0.0f, 5.0f) > 2 ? true : false;
         _points = _isWave ? 10 : 5;
@@ -112,6 +122,11 @@ public class Enemy : MonoBehaviour
 
         if(other.tag == "Laser"){
             if(other.GetComponent<Laser>().GetEnemyLaser()){
+                return;
+            }
+            if(_enemyShield.activeSelf){
+                _enemyShield.SetActive(false);
+                Destroy(other.gameObject);
                 return;
             }
             _audioSource.Play();

@@ -26,6 +26,10 @@ public class UIManager : MonoBehaviour
     private GameManager _gameManager;
     private Slider _thrusterSlider;
 
+    public int ScoreVal {
+        get { return _scoreVal; }
+    }
+
     public void OnEnemyDestroied(int points){
         _scoreVal += points;
         UpdateScore(_scoreVal);
