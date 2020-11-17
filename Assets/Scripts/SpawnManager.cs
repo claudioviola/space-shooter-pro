@@ -8,6 +8,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemy;
     [SerializeField]
+    private GameObject _asteroid;
+    [SerializeField]
     private GameObject _superLaserPowerUp;
     [SerializeField]
     private GameObject _enemiesContainer;
@@ -18,7 +20,9 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float _superLaserPowerUpTime = 30f;
     [SerializeField]
-    private float _spawnEnemyTime = 2f;
+    private float _spawnEnemyTime = 4f;
+    [SerializeField]
+    private float _asteroidEnemyTime = 20f;
     [SerializeField]
     private float _spawnPowerUpTime = 2f;
     [SerializeField]
@@ -27,6 +31,8 @@ public class SpawnManager : MonoBehaviour
     private float _maxPowerUpTime = 7f;
     [SerializeField]
     private bool isSpawningEnemy = true;
+    [SerializeField]
+    private bool isSpawningAsteroid = true;
     [SerializeField]
     private bool isSpawningPowerUp = true;
     private bool shouldSpawnAmmo = false;
@@ -40,12 +46,14 @@ public class SpawnManager : MonoBehaviour
         StopCoroutine("EnemyRoutine");
         StopCoroutine("PowerUpRoutine");
         StopCoroutine("SuperLaserPowerUpRoutine");
+        StopCoroutine("AsteroidCoroutine");
     }
 
     public void initMe(){
         StartCoroutine("EnemyRoutine");
         StartCoroutine("PowerUpRoutine");
         StartCoroutine("SuperLaserPowerUpRoutine");
+        StartCoroutine("AsteroidCoroutine");
     }
 
     // Start is called before the first frame update
@@ -65,6 +73,16 @@ public class SpawnManager : MonoBehaviour
             GameObject newEnemy = Instantiate(_enemy);
             newEnemy.transform.parent = _enemiesContainer.transform;
             yield return new WaitForSeconds(_spawnEnemyTime);
+        }
+    }
+
+
+    private IEnumerator AsteroidCoroutine(){
+        yield return new WaitForSeconds(1f);
+        while(isSpawningAsteroid){
+            GameObject newAsteroid = Instantiate(_asteroid);
+            newAsteroid.transform.parent = _enemiesContainer.transform;
+            yield return new WaitForSeconds(_asteroidEnemyTime);
         }
     }
 
