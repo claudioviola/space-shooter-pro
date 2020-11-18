@@ -55,7 +55,9 @@ MonoBehaviour:
   _enemyLaser: {fileID: 132006060550996451, guid: fde747a3a45174ce3b5fff490243f004,
     type: 3}
   _enemyShield: {fileID: 7720441938493050500}
-  _fireRate: 1
+  _hasShield: 0
+  _isAgressive: 0
+  _agressiveDistance: 5
 --- !u!212 &4697597008263004345
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -196,7 +198,7 @@ AudioSource:
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
-  BypassEffects: 0
+  BypassEffects: 1
   BypassListenerEffects: 0
   BypassReverbZones: 0
   rolloffCustomCurve:
@@ -283,7 +285,7 @@ PrefabInstance:
     - target: {fileID: 9134023653649842777, guid: 28d0c3366fc4b4209b563cc7223537ff,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9134023653649842778, guid: 28d0c3366fc4b4209b563cc7223537ff,
         type: 3}

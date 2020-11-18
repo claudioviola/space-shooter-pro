@@ -19,6 +19,9 @@ public class Enemy : MonoBehaviour
     private bool _hasShield = false;
     private UIManager _uiManager;
     [SerializeField]
+    private bool _isAgressive = false;
+    [SerializeField]
+    private float _agressiveDistance = 5.0f;
     private float _fireRate = 1f;
     private float _canFire = -1f;
     private float _awakeTime;
@@ -57,12 +60,20 @@ public class Enemy : MonoBehaviour
             _enemyShield.SetActive(true);
         }    
         _canFire = Time.time + Random.Range(0.5f, 1f);
-        _isWave = Random.Range(0.0f, 5.0f) > 2 ? true : false;
+        _isWave = (Random.Range(0.0f, 5.0f) > 2);
         _points = _isWave ? 10 : 5;
         _speed = _isWave ? _speed / 2 : _speed;
         _maxSpeed = _speed;
         Vector3 position = new Vector3(Random.Range(_limitLx, _limitRx), _initY, 0);
         transform.position = position;
+
+        if(!_isWave && !_isAgressive && Time.time > 50f){
+            _isAgressive = Random.Range(0,2) == 1;
+        }
+
+        if(_isAgressive){
+            gameObject.GetComponent<SpriteRenderer>().color =  new Color(255, 0, 255, 255);
+        }
     }
 
     void Fire(){
@@ -77,7 +88,7 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if(Time.time > _canFire){
+        if(Time.time > _canFire && !_isDestroying){
             _fireRate = Random.Range(1.0f, 2.5f);
             _canFire = Time.time + _fireRate;
             Fire();
@@ -95,10 +106,18 @@ public class Enemy : MonoBehaviour
         float speed = getMySpeed(_speed, _maxSpeed);
         Vector3 newPos = Vector3.down * speed * Time.deltaTime;
         if(_isWave){
-            // Debug.Log("_frequency:"+_frequency);
-            // Debug.Log("_magnitude:"+_magnitude);
             Vector3 sinPos = Vector3.right * Mathf.Sin(Time.time * _frequency) * _magnitude;
             newPos = new Vector3(sinPos.x, newPos.y, newPos.z);
+            transform.Translate(newPos);
+            return;
+        }
+        if(_isAgressive && transform.position.y + 2f > _player.transform.position.y){
+            float distance = Vector3.Distance(_player.transform.position, transform.position);
+            if(distance <= _agressiveDistance){
+                float velocity = _speed * Time.deltaTime;
+                transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, velocity);
+                return;
+            }
         }
         transform.Translate(newPos);
     }
@@ -132,6 +151,7 @@ public class Enemy : MonoBehaviour
             _audioSource.Play();
             _isDestroying = true;
             _player.OnEnemyDestroy(_points);
+            _enemyShield.SetActive(false);
             _animController.SetTrigger("OnEnemyDeath");
             Destroy(this.gameObject, 2.3f);
             Destroy(other.gameObject);
@@ -140,6 +160,7 @@ public class Enemy : MonoBehaviour
         if(other.tag == "Super_Laser"){
             _audioSource.Play();
             _isDestroying = true;
+            _enemyShield.SetActive(false);
             _player.OnEnemyDestroy(_points);
             _animController.SetTrigger("OnEnemyDeath");
             Destroy(this.gameObject, 2.3f);
@@ -148,6 +169,7 @@ public class Enemy : MonoBehaviour
         if(other.tag == "Player"){
             _audioSource.Play();
             _isDestroying = true;
+            _enemyShield.SetActive(false);
             _animController.SetTrigger("OnEnemyDeath");
             Destroy(this.gameObject, 2.3f);
             if(_player){
