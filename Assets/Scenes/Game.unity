@@ -819,6 +819,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382be7c8ead5846298d4c6785e93224b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _nextLevelScore: 20
 --- !u!4 &307256255
 Transform:
   m_ObjectHideFlags: 0
@@ -1911,12 +1912,14 @@ MonoBehaviour:
     type: 3}
   _enemiesContainer: {fileID: 1348103126}
   _powerUpContainer: {fileID: 1046643079}
-  _powerUps:
-  - {fileID: 5943567970508145818, guid: 58c2ad070c89d40f8aa839b52a66987d, type: 3}
+  _advancedPowerUps:
   - {fileID: 8631262716475294982, guid: b18435ca8ab844ff596cc59747e525fe, type: 3}
-  - {fileID: 8880828558459777864, guid: fb69fd6bfe70b4d61994c9f01a58adf2, type: 3}
-  - {fileID: 8769571007648968696, guid: c5062aeb9f85c4144a616b8cb427891f, type: 3}
+  - {fileID: 7775192999958774371, guid: dd6a6cb724d7b41958c81a49831094d7, type: 3}
+  _basicPowerUps:
+  - {fileID: 5943567970508145818, guid: 58c2ad070c89d40f8aa839b52a66987d, type: 3}
   - {fileID: 1725650425422460429, guid: 013d7454052e84cabaedfbcf71d29374, type: 3}
+  - {fileID: 8769571007648968696, guid: c5062aeb9f85c4144a616b8cb427891f, type: 3}
+  - {fileID: 8880828558459777864, guid: fb69fd6bfe70b4d61994c9f01a58adf2, type: 3}
   _superLaserPowerUpTime: 30
   _spawnEnemyTime: 5
   _asteroidEnemyTime: 30

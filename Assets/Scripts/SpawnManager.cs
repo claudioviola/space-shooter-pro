@@ -16,7 +16,9 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _powerUpContainer;
     [SerializeField]
-    private GameObject[] _powerUps;
+    private GameObject[] _advancedPowerUps;
+    [SerializeField]
+    private GameObject[] _basicPowerUps;
     [SerializeField]
     private float _superLaserPowerUpTime = 30f;
     [SerializeField]
@@ -24,7 +26,9 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float _asteroidEnemyTime = 20f;
     [SerializeField]
-    private float _spawnPowerUpTime = 2f;
+    private float _spawnAdvancedPowerUpTime = 30f;
+    [SerializeField]
+    private float _spawnBasicPowerUpTime = 2f;
     [SerializeField]
     private float _minPowerUpTime = 3f;
     [SerializeField]
@@ -36,7 +40,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private bool isSpawningPowerUp = true;
     private bool shouldSpawnAmmo = false;
-
+    private int _gameLevel = 0;
     public void NeedAmmo(){
         print("NeedAmmo");
         shouldSpawnAmmo = true;
@@ -44,16 +48,37 @@ public class SpawnManager : MonoBehaviour
     
     public void OnPlayerDeath(){
         StopCoroutine("EnemyRoutine");
-        StopCoroutine("PowerUpRoutine");
+        StopCoroutine("BasicPowerUp");
+        StopCoroutine("AdvancePowerUp");
         StopCoroutine("SuperLaserPowerUpRoutine");
-        StopCoroutine("AsteroidCoroutine");
+        
     }
 
     public void initMe(){
         StartCoroutine("EnemyRoutine");
-        StartCoroutine("PowerUpRoutine");
-        StartCoroutine("SuperLaserPowerUpRoutine");
-        StartCoroutine("AsteroidCoroutine");
+        StartCoroutine("BasicPowerUp");
+        StartCoroutine("AdvancePowerUp");
+    }
+
+    public void PlayLevel(int level){
+        switch(level){
+            case 1:
+                _gameLevel = 1;
+                StartCoroutine("AsteroidCoroutine");
+            break;
+            case 2:
+                // start shield enemies and agressive enemy
+                _gameLevel = 2;
+            break;     
+            case 3:
+                // start wave enemy
+                _gameLevel = 3;
+            break;   
+            case 4:
+                // increase enemy speed
+                _gameLevel = 4;
+            break;   
+        }
     }
 
     // Start is called before the first frame update
@@ -71,7 +96,23 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         while(isSpawningEnemy){
             GameObject newEnemy = Instantiate(_enemy);
+            Enemy enemy = newEnemy.GetComponent<Enemy>();
             newEnemy.transform.parent = _enemiesContainer.transform;
+            print("_gameLevel"+_gameLevel);
+            if(_gameLevel == 2){
+                enemy.ShieldEnemy = true;
+                enemy.AggressiveEnemy = true;
+            } else if (_gameLevel == 3) {
+                enemy.ShieldEnemy = true;
+                enemy.AggressiveEnemy = true;
+                enemy.WaveEnemy = true;
+            } else if (_gameLevel == 4) {
+                enemy.ShieldEnemy = true;
+                enemy.AggressiveEnemy = true;
+                enemy.WaveEnemy = true;
+                enemy.Speed = enemy.Speed + 2;
+            }
+            
             yield return new WaitForSeconds(_spawnEnemyTime);
         }
     }
@@ -86,25 +127,25 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SuperLaserPowerUpRoutine(){
-        while(true){
-            yield return new WaitForSeconds(_superLaserPowerUpTime);
-            Instantiate(_superLaserPowerUp, _powerUpContainer.transform);
+    private IEnumerator AdvancePowerUp(){ // Health + Super Laser
+        yield return new WaitForSeconds(_spawnAdvancedPowerUpTime);
+        while(isSpawningPowerUp){
+            int powerUpId = Random.Range(0, _advancedPowerUps.Length-1);
+            GameObject newPowerUp = _advancedPowerUps[powerUpId];
+            GameObject current = Instantiate(newPowerUp, _powerUpContainer.transform);
+            yield return new WaitForSeconds(_spawnAdvancedPowerUpTime);
         }
     }
-    private IEnumerator PowerUpRoutine(){
-        yield return new WaitForSeconds(_spawnPowerUpTime);
+    
+    private IEnumerator BasicPowerUp(){ // Ammo + Triple + Shield + Speed
+        yield return new WaitForSeconds(_spawnBasicPowerUpTime);
         while(isSpawningPowerUp){
-            int powerUpId = shouldSpawnAmmo ? 4 : Random.Range(0, _powerUps.Length-1);
-
-            GameObject newPowerUp = _powerUps[powerUpId];
-            // Instantiate utilizzo con il passaggio del container come secondo parametro 
-            // https://docs.unity3d.com/ScriptReference/Object.Instantiate.html
-            // si evita il current.transform.parent = _powerUpContainer.transform;
+            int powerUpId = shouldSpawnAmmo ? 1 : Random.Range(0, _basicPowerUps.Length-1);
+            GameObject newPowerUp = _basicPowerUps[powerUpId];
             GameObject current = Instantiate(newPowerUp, _powerUpContainer.transform);
-            yield return new WaitForSeconds(Random.Range(_minPowerUpTime, _maxPowerUpTime));
+            yield return new WaitForSeconds(_spawnBasicPowerUpTime);
 
-            if(shouldSpawnAmmo && powerUpId == 4){
+            if(shouldSpawnAmmo && powerUpId == 1){
                 shouldSpawnAmmo = false;
             }
         }

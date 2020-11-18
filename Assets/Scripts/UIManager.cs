@@ -33,6 +33,7 @@ public class UIManager : MonoBehaviour
     public void OnEnemyDestroied(int points){
         _scoreVal += points;
         UpdateScore(_scoreVal);
+        _gameManager.OnScoreUpdate(points);
     }
 
     public void OnPlayerHit(int livesLeft){

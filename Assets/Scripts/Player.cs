@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
                 _uiManager.UpdateAmmoCount(_ammoCount);
                 break;
             case "TRIPLE":
-                _ammoCount = _ammoCharge;
+                _ammoCount = _ammoCount < _ammoCharge ? _ammoCharge : _ammoCount;
                 _uiManager.UpdateAmmoCount(_ammoCount);
                 StartCoroutine("EnableTriplePowerUp");
                 break;

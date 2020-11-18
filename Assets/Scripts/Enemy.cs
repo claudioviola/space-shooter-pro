@@ -22,12 +22,13 @@ public class Enemy : MonoBehaviour
     private bool _isAgressive = false;
     [SerializeField]
     private float _agressiveDistance = 5.0f;
+    [SerializeField]
+    private bool _isWave = false;
     private float _fireRate = 1f;
     private float _canFire = -1f;
     private float _awakeTime;
     private float _maxSpeed;
     private bool _isDestroying = false;
-    private bool _isWave = false;
     private float _limitDown = -6f;
     private float _limitLx = -9;
     private float _limitRx = 9;
@@ -36,6 +37,45 @@ public class Enemy : MonoBehaviour
     private AudioSource _audioSource;
     private Animator _animController;
     private Player _player;
+
+    public bool ShieldEnemy
+    {
+        get { return _enemyShield.activeSelf; }
+        set
+        {
+            _enemyShield.SetActive(Random.Range(0,2) == 1);
+        }
+    }
+
+    public bool AggressiveEnemy
+    {
+        get { return _isAgressive; }
+        set
+        {
+            _isAgressive = Random.Range(0,2) == 1;
+        }
+    }
+
+    public bool WaveEnemy
+    {
+        get { return _isWave; }
+        set
+        {
+            _isWave = (Random.Range(0.0f, 5.0f) > 3);
+        }
+    }
+
+
+    public float Speed
+    {
+        get { return _speed; }
+        set
+        {
+            _speed = value;
+        }
+    }
+
+    
 
     void Start() {
         _enemyShield.SetActive(_hasShield);
@@ -56,20 +96,12 @@ public class Enemy : MonoBehaviour
     }
 
     void initMe(){
-        if(_uiManager.ScoreVal > 30 && Random.Range(0,2) == 1){
-            _enemyShield.SetActive(true);
-        }    
         _canFire = Time.time + Random.Range(0.5f, 1f);
-        _isWave = (Random.Range(0.0f, 5.0f) > 3);
         _points = _isWave ? 10 : 5;
         _speed = _isWave ? _speed / 2 : _speed;
         _maxSpeed = _speed;
         Vector3 position = new Vector3(Random.Range(_limitLx, _limitRx), _initY, 0);
         transform.position = position;
-
-        if(!_isWave && !_isAgressive && Time.time > 50f){
-            _isAgressive = Random.Range(0,2) == 1;
-        }
 
         if(_isAgressive){
             gameObject.GetComponent<SpriteRenderer>().color =  new Color(255, 0, 255, 255);
@@ -80,7 +112,7 @@ public class Enemy : MonoBehaviour
         if(_isDestroying){
             return;
         }
-        print("Fire");
+        // print("Fire");
         Vector3 pos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         GameObject enemyLaser = Instantiate(_enemyLaser, pos, Quaternion.identity);
         enemyLaser.transform.parent = this.transform.parent;

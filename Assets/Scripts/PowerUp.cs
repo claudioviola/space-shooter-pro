@@ -46,7 +46,7 @@ public class PowerUp : MonoBehaviour
             Laser laser = other.GetComponent<Laser>();
             print("collision with laser");
             AudioSource.PlayClipAtPoint(_powerUpAudioClip, transform.position);
-            // Destroy(this.gameObject);
+            Destroy(this.gameObject);
             Destroy(other.gameObject);
         }
     }
