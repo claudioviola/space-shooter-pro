@@ -38,7 +38,7 @@ public class Enemy : MonoBehaviour
     private Player _player;
 
     void Start() {
-        _enemyShield.SetActive(false);
+        _enemyShield.SetActive(_hasShield);
         _audioSource = gameObject.GetComponent<AudioSource>();
         _animController = gameObject.GetComponent<Animator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
@@ -60,7 +60,7 @@ public class Enemy : MonoBehaviour
             _enemyShield.SetActive(true);
         }    
         _canFire = Time.time + Random.Range(0.5f, 1f);
-        _isWave = (Random.Range(0.0f, 5.0f) > 2);
+        _isWave = (Random.Range(0.0f, 5.0f) > 3);
         _points = _isWave ? 10 : 5;
         _speed = _isWave ? _speed / 2 : _speed;
         _maxSpeed = _speed;
@@ -77,18 +77,43 @@ public class Enemy : MonoBehaviour
     }
 
     void Fire(){
+        if(_isDestroying){
+            return;
+        }
+        print("Fire");
         Vector3 pos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         GameObject enemyLaser = Instantiate(_enemyLaser, pos, Quaternion.identity);
         enemyLaser.transform.parent = this.transform.parent;
-        Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-        foreach(Laser l in lasers){
-            l.SetEnemyLaser();
+    }
+
+     void FirePowerUp(){
+        if(_isDestroying){
+            return;
+        }
+        GameObject[] powerUps = GameObject.FindGameObjectsWithTag("PowerUp");
+        float min = transform.position.x - 1;
+        float max = transform.position.x + 1;
+        foreach(GameObject pUp in powerUps){
+            if(
+                Time.time > _canFire && 
+                (
+                    pUp.transform.position.x > min 
+                    && pUp.transform.position.x < max 
+                    && pUp.transform.position.y < transform.position.y + 1f
+                )
+            ){
+                print("FirePowerUp");
+                _fireRate = 1f;
+                _canFire = Time.time + _fireRate;
+               Fire();
+            }
         }
     }
 
     void Update()
     {
-        if(Time.time > _canFire && !_isDestroying){
+        FirePowerUp();
+        if(Time.time > _canFire){
             _fireRate = Random.Range(1.0f, 2.5f);
             _canFire = Time.time + _fireRate;
             Fire();
@@ -98,7 +123,6 @@ public class Enemy : MonoBehaviour
             initMe();
             return;
         }
-
         MoveMe();
     }
 
@@ -140,9 +164,6 @@ public class Enemy : MonoBehaviour
         }
 
         if(other.tag == "Laser"){
-            if(other.GetComponent<Laser>().GetEnemyLaser()){
-                return;
-            }
             if(_enemyShield.activeSelf){
                 _enemyShield.SetActive(false);
                 Destroy(other.gameObject);

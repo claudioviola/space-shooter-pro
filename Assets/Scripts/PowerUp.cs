@@ -5,8 +5,6 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
 
-
-    
     [SerializeField]
     private AudioClip _powerUpAudioClip;
     [SerializeField]
@@ -42,6 +40,14 @@ public class PowerUp : MonoBehaviour
             }
             AudioSource.PlayClipAtPoint(_powerUpAudioClip, transform.position);
             Destroy(this.gameObject);
+        }
+
+        if(other.tag == "Laser_Enemy"){
+            Laser laser = other.GetComponent<Laser>();
+            print("collision with laser");
+            AudioSource.PlayClipAtPoint(_powerUpAudioClip, transform.position);
+            // Destroy(this.gameObject);
+            Destroy(other.gameObject);
         }
     }
 }

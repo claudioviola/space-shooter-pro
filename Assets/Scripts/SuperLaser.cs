@@ -13,10 +13,6 @@ public class SuperLaser : MonoBehaviour
     private float _fireRate = 1f;
     private GameObject _player;
 
-    public bool GetEnemyLaser(){
-        return true;
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +33,6 @@ public class SuperLaser : MonoBehaviour
     }
 
     public void PlayMe(){
-        print("PlayMe");
         _canFire = Time.time + _fireRate;
         _isAnimationEnd = true;
     }

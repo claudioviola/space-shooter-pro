@@ -9,19 +9,9 @@ public class Laser : MonoBehaviour
     private float _speed = 12f;
     private float _limitUp = 7.5f;
     private float _limitDown = -7.5f;
-    [SerializeField]
-    private bool _isEnemyLaser = false;
-
-    public void SetEnemyLaser(){
-        _isEnemyLaser = true;
-    }
-
-    public bool GetEnemyLaser(){
-        return _isEnemyLaser;
-    }
 
     void Update() {
-       if(_isEnemyLaser){
+       if(tag == "Laser_Enemy"){
            MoveDown();
        } else {
            MoveUp();
@@ -53,7 +43,7 @@ public class Laser : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.tag == "Player" && _isEnemyLaser){
+        if(other.tag == "Player" && transform.tag == "Laser_Enemy"){
             Player player = other.GetComponent<Player>();
             player.OnHitMe();
             Destroy(this.gameObject);

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Laser
   - Super_Laser
+  - PowerUp
+  - Laser_Enemy
   layers:
   - Default
   - TransparentFX
