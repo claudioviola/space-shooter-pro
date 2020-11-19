@@ -16,6 +16,26 @@ public class GameManager : MonoBehaviour
     private int _gameLevel = 0;
     private float _startTime = 0f;
 
+    int _level1_min = 30;
+    int _level1_max = 40;
+    int _level2_min = 40;
+    int _level2_max = 70;
+    int _level3_min = 70;
+    int _level3_max = 110;
+    int _level4_min = 110;
+    int _level4_max = 130;
+    int _level5_min = 130;
+    
+    // int _level1_min = 10;
+    // int _level1_max = 20;
+    // int _level2_min = 20;
+    // int _level2_max = 30;
+    // int _level3_min = 30;
+    // int _level3_max = 40;
+    // int _level4_min = 40;
+    // int _level4_max = 60;
+    // int _level5_min = 60;
+
     public void OnGameOver(){
         _isGameOver = true;
     }
@@ -38,6 +58,10 @@ public class GameManager : MonoBehaviour
         if(!_spawnManager){
             Debug.LogError("Spawn_Manager Script Component not available");
         }
+        if(!_uiManager){
+            Debug.LogError("UI_Manager not available");
+        }
+        _uiManager.SetGameLevel(_gameLevel);
     }
 
     // Update is called once per frame
@@ -59,22 +83,31 @@ public class GameManager : MonoBehaviour
 
         float gameTime = Time.time - _startTime;
 
-        if(gameTime >  30 && gameTime < 50 && _gameLevel == 0) {
+        if(gameTime > _level1_min && gameTime < _level1_max && _gameLevel == 0) {
             // start asteroid
             _gameLevel++;
-            _spawnManager.PlayLevel(1);
-        } else if(gameTime >= 50 && gameTime < 90 && _gameLevel == 1) {
+            _uiManager.SetGameLevel(_gameLevel);
+            _spawnManager.PlayLevel(_gameLevel);
+        } else if(gameTime >= _level2_min && gameTime < _level2_max && _gameLevel == 1) {
             // start shield enemies and agressive enemy
             _gameLevel++;
-            _spawnManager.PlayLevel(2);
-        } else if(gameTime >= 90 && gameTime < 120 && _gameLevel == 2) {
+            _uiManager.SetGameLevel(_gameLevel);
+            _spawnManager.PlayLevel(_gameLevel);
+        } else if(gameTime >= _level3_min && gameTime < _level3_max && _gameLevel == 2) {
             // start wave enemies
             _gameLevel++;
-            _spawnManager.PlayLevel(3);
-        } else if(gameTime >= 120 && _gameLevel == 3) {
+            _uiManager.SetGameLevel(_gameLevel);
+            _spawnManager.PlayLevel(_gameLevel);
+        } else if(gameTime >= _level4_min && gameTime < _level4_max && _gameLevel == 3) {
             // Increase speed enemy
             _gameLevel++;
-            _spawnManager.PlayLevel(4);
+            _uiManager.SetGameLevel(_gameLevel);
+            _spawnManager.PlayLevel(_gameLevel);
+        } else if(gameTime >= _level5_min && _gameLevel == 4) {
+            // Play the boss
+            _gameLevel++;
+            _uiManager.SetGameLevel(_gameLevel);
+            _spawnManager.PlayLevel(_gameLevel);
         }
     }
 }

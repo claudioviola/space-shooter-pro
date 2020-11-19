@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _scoreTxt;
     [SerializeField]
+    private Text _levelTxt;
+    [SerializeField]
     private GameObject _gameOverContainer;
     [SerializeField]
     private GameObject _gameOverTxt;
@@ -25,9 +27,15 @@ public class UIManager : MonoBehaviour
     private Coroutine _gameOverRoutine;
     private GameManager _gameManager;
     private Slider _thrusterSlider;
+    private int _gameLevel = 0;
 
     public int ScoreVal {
         get { return _scoreVal; }
+    }
+    
+    public void SetGameLevel(int level) {
+        _gameLevel = level;
+        _levelTxt.text = "Level: " + _gameLevel;
     }
 
     public void OnEnemyDestroied(int points){

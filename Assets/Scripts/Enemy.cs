@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour
 {
 
     [SerializeField]
-    private float _speed = 4f;
+    private float _speed = 2.5f;
     [SerializeField]
     private float _frequency = 4f;
     [SerializeField]
@@ -23,8 +23,10 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _agressiveDistance = 5.0f;
     [SerializeField]
+    private float _isSmartEnemy = 5.0f;
+    [SerializeField]
     private bool _isWave = false;
-    private float _fireRate = 1f;
+    private float _fireRate = 1.5f;
     private float _canFire = -1f;
     private float _awakeTime;
     private float _maxSpeed;
@@ -167,7 +169,7 @@ public class Enemy : MonoBehaviour
             transform.Translate(newPos);
             return;
         }
-        if(_isAgressive && transform.position.y + 2f > _player.transform.position.y){
+        if(_isAgressive && _player && transform.position.y + 2f > _player.transform.position.y){
             float distance = Vector3.Distance(_player.transform.position, transform.position);
             if(distance <= _agressiveDistance){
                 float velocity = _speed * Time.deltaTime;

@@ -41,6 +41,8 @@ public class SpawnManager : MonoBehaviour
     private bool isSpawningPowerUp = true;
     private bool shouldSpawnAmmo = false;
     private int _gameLevel = 0;
+    private GameObject _boss;
+
     public void NeedAmmo(){
         print("NeedAmmo");
         shouldSpawnAmmo = true;
@@ -50,7 +52,6 @@ public class SpawnManager : MonoBehaviour
         StopCoroutine("EnemyRoutine");
         StopCoroutine("BasicPowerUp");
         StopCoroutine("AdvancePowerUp");
-        StopCoroutine("SuperLaserPowerUpRoutine");
         
     }
 
@@ -78,13 +79,27 @@ public class SpawnManager : MonoBehaviour
                 // increase enemy speed
                 _gameLevel = 4;
             break;   
+            case 5:
+                // play the boss
+                Debug.Log("play the boss");
+                _gameLevel = 5;
+                StopCoroutine("EnemyRoutine");
+                StopCoroutine("AdvancePowerUp");
+                StopCoroutine("AsteroidCoroutine");
+                StartCoroutine("BossRoutine");
+            break;               
         }
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        _boss = GameObject.Find("Boss");
+        _boss.SetActive(false);
         
+        if(!_boss){
+            Debug.LogError("Boss not available");
+        }
     }
 
     //Called by GameManager
@@ -92,12 +107,21 @@ public class SpawnManager : MonoBehaviour
         initMe();
     }
 
+    private IEnumerator BossRoutine(){
+        yield return new WaitForSeconds(5f);
+        _boss.SetActive(false);
+        _boss.GetComponent<Boss>().PlayMe();
+    }
+
     private IEnumerator EnemyRoutine(){
+        Debug.Log("isSpawningEnemy:"+isSpawningEnemy);
         yield return new WaitForSeconds(1f);
+        Debug.Log("isSpawningEnemy:"+isSpawningEnemy);
         while(isSpawningEnemy){
             GameObject newEnemy = Instantiate(_enemy);
             Enemy enemy = newEnemy.GetComponent<Enemy>();
             newEnemy.transform.parent = _enemiesContainer.transform;
+            Debug.Log("new Enemy");
             print("_gameLevel"+_gameLevel);
             if(_gameLevel == 2){
                 enemy.ShieldEnemy = true;
