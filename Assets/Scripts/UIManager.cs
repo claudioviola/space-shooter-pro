@@ -22,6 +22,8 @@ public class UIManager : MonoBehaviour
     private GameObject _gameOverContainer;
     [SerializeField]
     private GameObject _gameOverTxt;
+    [SerializeField]
+    private GameObject _youWinText;
     private Image _livesDisplayer;
     private int _scoreVal;
     private Coroutine _gameOverRoutine;
@@ -35,7 +37,7 @@ public class UIManager : MonoBehaviour
     
     public void SetGameLevel(int level) {
         _gameLevel = level;
-        _levelTxt.text = "Level: " + _gameLevel;
+        _levelTxt.text = "Level 5/" + _gameLevel;
     }
 
     public void OnEnemyDestroied(int points){
@@ -48,10 +50,17 @@ public class UIManager : MonoBehaviour
         livesLeft = livesLeft > 0 ? livesLeft : 0;
         _livesDisplayer.sprite = _livesSprite[livesLeft];
         if(livesLeft < 1){
+            _youWinText.SetActive(false);
             _gameOverContainer.SetActive(true);
             _gameOverRoutine = StartCoroutine(GameOverRoutine());
             _gameManager.OnGameOver();
         }
+    }
+
+    public void OnPlayerWin(){
+        _gameOverTxt.SetActive(false);
+        _gameOverContainer.SetActive(true);
+        _gameOverRoutine = StartCoroutine("YouWinRoutine");
     }
 
     public void OnShieldHit(int shieldLeft){
@@ -116,6 +125,12 @@ public class UIManager : MonoBehaviour
         if(!_ammoCount){
             Debug.LogError("Ammo_Count not found in UI Manager");
         }
+        if(!_youWinText){
+            Debug.LogError("You_Win_Text not found in UI Manager");
+        }
+        if(!_gameOverTxt){
+            Debug.LogError("Game_Over_Text not found in UI Manager");
+        }
     }
 
     IEnumerator GameOverRoutine(){
@@ -124,6 +139,15 @@ public class UIManager : MonoBehaviour
             _gameOverTxt.SetActive(false);
             yield return new WaitForSeconds(0.2f);
             _gameOverTxt.SetActive(true);
+        }
+    }
+
+    IEnumerator YouWinRoutine(){
+        while(true){
+            yield return new WaitForSeconds(0.5f);
+            _youWinText.SetActive(false);
+            yield return new WaitForSeconds(0.2f);
+            _youWinText.SetActive(true);
         }
     }
 

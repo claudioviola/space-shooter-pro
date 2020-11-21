@@ -25,6 +25,7 @@ public class Boss : MonoBehaviour
     [SerializeField]
     GameObject _bossFire;
     PlayableDirector _playable;
+    GameManager _gameManager;
 
 
     public void PlayMe(){
@@ -35,11 +36,16 @@ public class Boss : MonoBehaviour
     void Start()
     {   
         // gameObject.SetActive(false);
+        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _explosion.SetActive(false);
         _damageLeft.SetActive(false);
         _damageRight.SetActive(false);
         _spaceShip = transform.Find("Space_Ship").gameObject;
         _playable = transform.GetComponent<PlayableDirector>();
+
+        if(!_gameManager){
+            Debug.LogError("Game_Manager not available");
+        }
     }
 
     // Update is called once per frame
@@ -78,6 +84,7 @@ public class Boss : MonoBehaviour
                 StartCoroutine("DestroyRoutine");
             }
             print("laser");
+            _gameManager.OnBossDeath();
             Destroy(other.gameObject);
         }
 

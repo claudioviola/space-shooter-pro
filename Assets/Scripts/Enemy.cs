@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour
     private float _limitLx = -9;
     private float _limitRx = 9;
     private float _initY = 7.3f;
-    private int _points;
+    private int _points = 5;
     private AudioSource _audioSource;
     private Animator _animController;
     [SerializeField]
@@ -133,11 +133,11 @@ public class Enemy : MonoBehaviour
             gameObject.GetComponent<SpriteRenderer>().color =  new Color(255, 0, 255, 255);
         }
 
-        print("isAggressive:"+_isAgressive);
-        print("enemyShield:"+_enemyShield.activeSelf);
-        print("isWave:"+_isWave);
-        print("isSmartEnemy:"+_isSmartEnemy);
-        print("Init Enemy Speed:"+_speed);
+        // print("isAggressive:"+_isAgressive);
+        // print("enemyShield:"+_enemyShield.activeSelf);
+        // print("isWave:"+_isWave);
+        // print("isSmartEnemy:"+_isSmartEnemy);
+        // print("Init Enemy Speed:"+_speed);
     }
 
     void Fire(){

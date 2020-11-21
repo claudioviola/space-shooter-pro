@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
 
     private SpawnManager _spawnManager;
+    private GameObject _enemyContainer;
     private UIManager _uiManager;
     private bool _isGameOver = false;
     private bool _isStarted = false;
@@ -39,6 +40,10 @@ public class GameManager : MonoBehaviour
     public void OnGameOver(){
         _isGameOver = true;
     }
+    
+    public void OnBossDeath(){
+        _uiManager.OnPlayerWin();
+    }
 
     public void OnFirstAsteroidDestroyed(){
         _spawnManager.StartMe();
@@ -54,6 +59,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        _enemyContainer = GameObject.Find("EnemyContainer");
         _uiManager = GameObject.Find("UI_Manager").GetComponent<UIManager>();
         if(!_spawnManager){
             Debug.LogError("Spawn_Manager Script Component not available");
@@ -61,7 +67,11 @@ public class GameManager : MonoBehaviour
         if(!_uiManager){
             Debug.LogError("UI_Manager not available");
         }
+        if(!_enemyContainer){
+            Debug.LogError("EnemyContainer not available");
+        }
         _uiManager.SetGameLevel(_gameLevel);
+
     }
 
     // Update is called once per frame
@@ -104,6 +114,10 @@ public class GameManager : MonoBehaviour
             _uiManager.SetGameLevel(_gameLevel);
             _spawnManager.PlayLevel(_gameLevel);
         } else if(gameTime >= _level5_min && _gameLevel == 4) {
+            // Hold on until the player kill all the enemies
+            if(_enemyContainer.transform.childCount > 0){
+                return;
+            }
             // Play the boss
             _gameLevel++;
             _uiManager.SetGameLevel(_gameLevel);

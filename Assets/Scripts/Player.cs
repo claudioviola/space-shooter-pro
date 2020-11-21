@@ -68,6 +68,7 @@ public class Player : MonoBehaviour
     public void OnCollect(string type){
         switch(type){
             case "SUPER_LASER":
+                _isSuperLaserEnabled = true;
                 _sLaserCanFire = Time.time + _sLaserTime;
                 break;
             case "AMMO":
@@ -154,7 +155,7 @@ public class Player : MonoBehaviour
     IEnumerator PlayDestroying(){
         AudioSource.PlayClipAtPoint(_explosionSoundClip, _mainCamera.transform.position);
         _isDestroying = true;
-        Destroy(this.gameObject, 2.3f);
+        // Destroy(this.gameObject, 2.3f);
         transform.GetComponent<BoxCollider2D>().enabled = false;
         _explosion.SetActive(true);
         yield return new WaitForSeconds(0.5f);
@@ -246,23 +247,27 @@ public class Player : MonoBehaviour
     void Fire(){
         _audioSource.Play();
         _canFire = Time.time + _fireRate;
-            
-        if(_isTripleShotEnabled && _sLaserCanFire < Time.time){
-            Vector3 pos = new Vector3(transform.position.x, transform.position.y , 0);
+        Vector3 pos = new Vector3(transform.position.x, transform.position.y , 0);
+
+        if(_isTripleShotEnabled && !_isSuperLaserEnabled){
             GameObject tripleLaser = Instantiate(_tripleShot, pos, Quaternion.identity, _laserContainer.transform);
             tripleLaser.transform.parent = _laserContainer.transform;
+            return;
         }
-        else if(_isSuperLaserEnabled || _sLaserCanFire > Time.time){
+
+        if(_isSuperLaserEnabled && _sLaserCanFire > Time.time){
             // print(transform.position);
             GameObject superLaser = Instantiate(_superLaser, transform.position, Quaternion.identity);
+            _isSuperLaserEnabled = false;
+            _canFire = Time.time + 2.6f;
             return;
-        } else {
-            Vector3 pos = new Vector3(transform.position.x, transform.position.y + _laserOffest , 0);
-            _ammoCount--;
-            _uiManager.UpdateAmmoCount(_ammoCount);
-            GameObject newLaser = Instantiate(_laser, pos, Quaternion.identity, _laserContainer.transform);
-            newLaser.transform.parent = _laserContainer.transform;
         }
+
+        pos = new Vector3(transform.position.x, transform.position.y + _laserOffest , 0);
+        _ammoCount--;
+        _uiManager.UpdateAmmoCount(_ammoCount);
+        GameObject newLaser = Instantiate(_laser, pos, Quaternion.identity, _laserContainer.transform);
+        newLaser.transform.parent = _laserContainer.transform;
         
         if(_ammoCount <= 5){
             _spawnManager.NeedAmmo();

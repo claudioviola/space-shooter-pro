@@ -123,23 +123,24 @@ public class SpawnManager : MonoBehaviour
             GameObject newEnemy = Instantiate(_enemy);
             Enemy enemy = newEnemy.GetComponent<Enemy>();
             newEnemy.transform.parent = _enemiesContainer.transform;
-            enemy.Speed = 1.3f;
+            enemy.Speed = 1.8f;
+            enemy.FireRate = 3f;
             if(_gameLevel >= 1 && _gameLevel <= 2) { // Shield + Aggressive
-                enemy.Speed = 1.8f;
-                enemy.FireRate = 3f;
+                enemy.Speed = 2.2f;
+                enemy.FireRate = 2.5f;
                 enemy.ShieldEnemy = Random.Range(0,2) == 1;
                 enemy.AggressiveEnemy = !enemy.ShieldEnemy ? Random.Range(0,2) == 1 : false;
                 print("EnemyRoutine>_gameLevel:"+_gameLevel);
             } else if (_gameLevel == 3) { // Wave + Shield + Aggressive
-                enemy.Speed = 2.2f;
-                enemy.FireRate = 2.5f;
+                enemy.Speed = 2.5f;
+                enemy.FireRate = 2f;
                 enemy.WaveEnemy = Random.Range(0.0f, 5.0f) > 3;
                 enemy.ShieldEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
                 enemy.AggressiveEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
             } else if (_gameLevel == 4) { // Increase Enemy Speed + Wave + Shield + Aggressive
-                enemy.FireRate = 2.5f;
+                enemy.FireRate = 1.9f;
                 enemy.WaveEnemy = Random.Range(0.0f, 5.0f) > 3;
-                enemy.Speed = enemy.WaveEnemy ? 1f : 2.5f;
+                enemy.Speed = enemy.WaveEnemy ? 1f : 3f;
                 enemy.ShieldEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
                 enemy.AggressiveEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
             }
@@ -177,7 +178,7 @@ public class SpawnManager : MonoBehaviour
     private IEnumerator AdvancePowerUp(){ // Health + Super Laser
         yield return new WaitForSeconds(_spawnAdvancedPowerUpTime);
         while(isSpawningPowerUp){
-            int powerUpId = Random.Range(0, _advancedPowerUps.Length-1);
+            int powerUpId = Random.Range(0, _advancedPowerUps.Length);
             GameObject newPowerUp = _advancedPowerUps[powerUpId];
             GameObject current = Instantiate(newPowerUp, _powerUpContainer.transform);
             yield return new WaitForSeconds(_spawnAdvancedPowerUpTime);
@@ -187,7 +188,7 @@ public class SpawnManager : MonoBehaviour
     private IEnumerator BasicPowerUp(){ // Ammo + Triple + Shield + Speed
         yield return new WaitForSeconds(_spawnBasicPowerUpTime);
         while(isSpawningPowerUp){
-            int powerUpId = shouldSpawnAmmo ? 1 : Random.Range(0, _basicPowerUps.Length-1);
+            int powerUpId = shouldSpawnAmmo ? 1 : Random.Range(0, _basicPowerUps.Length);
             GameObject newPowerUp = _basicPowerUps[powerUpId];
             GameObject current = Instantiate(newPowerUp, _powerUpContainer.transform);
             yield return new WaitForSeconds(_spawnBasicPowerUpTime);
