@@ -2397,6 +2397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemy: {fileID: 6656860342178011071, guid: e2ec2f2f33cea4ad38ea4df79ecad0ec, type: 3}
+  _smartEnemy: {fileID: 3569064355409062203, guid: a8e4a4c64cc9a4f3b8220afb49380eac,
+    type: 3}
   _asteroid: {fileID: 4585566022359036243, guid: b6ed428a0b3434fc8a4aa6c66b96623c,
     type: 3}
   _superLaserPowerUp: {fileID: 7775192999958774371, guid: dd6a6cb724d7b41958c81a49831094d7,
@@ -2415,7 +2417,7 @@ MonoBehaviour:
   _spawnEnemyTime: 5
   _asteroidEnemyTime: 30
   _spawnAdvancedPowerUpTime: 30
-  _spawnBasicPowerUpTime: 2
+  _spawnBasicPowerUpTime: 4
   _minPowerUpTime: 3
   _maxPowerUpTime: 7
   isSpawningEnemy: 1

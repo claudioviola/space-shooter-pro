@@ -23,7 +23,8 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _agressiveDistance = 5.0f;
     [SerializeField]
-    private float _isSmartEnemy = 5.0f;
+    private bool _isSmartEnemy = false;
+    private float _escapeDirection;
     [SerializeField]
     private bool _isWave = false;
     private float _fireRate = 1.5f;
@@ -38,6 +39,10 @@ public class Enemy : MonoBehaviour
     private int _points;
     private AudioSource _audioSource;
     private Animator _animController;
+    [SerializeField]
+    private GameObject _explosionAnimationSmartEnemy;
+    [SerializeField]
+    private GameObject _smartEnemyShip;
     private Player _player;
 
     public bool ShieldEnemy
@@ -45,7 +50,7 @@ public class Enemy : MonoBehaviour
         get { return _enemyShield.activeSelf; }
         set
         {
-            _enemyShield.SetActive(Random.Range(0,2) == 1);
+            _enemyShield.SetActive(value);
         }
     }
 
@@ -54,7 +59,7 @@ public class Enemy : MonoBehaviour
         get { return _isAgressive; }
         set
         {
-            _isAgressive = Random.Range(0,2) == 1;
+            _isAgressive = value;
         }
     }
 
@@ -63,7 +68,8 @@ public class Enemy : MonoBehaviour
         get { return _isWave; }
         set
         {
-            _isWave = (Random.Range(0.0f, 5.0f) > 3);
+            _isWave = value;
+            _points = 10;
         }
     }
 
@@ -74,17 +80,39 @@ public class Enemy : MonoBehaviour
         set
         {
             _speed = value;
+            _maxSpeed = value;
         }
     }
 
+    public bool SmartEnemy
+    {
+        get { return _isSmartEnemy; }
+        set
+        {
+            _isSmartEnemy = value;
+            _points = 10;
+        }
+    }
     
-
+    
+    public float FireRate
+    {
+        get { return _fireRate; }
+        set
+        {
+            _fireRate = value;
+        }
+    }
+    
     void Start() {
-        _enemyShield.SetActive(_hasShield);
+        // _enemyShield.SetActive(_hasShield);
         _audioSource = gameObject.GetComponent<AudioSource>();
         _animController = gameObject.GetComponent<Animator>();
         _player = GameObject.Find("Player").GetComponent<Player>();
         _uiManager = GameObject.Find("UI_Manager").GetComponent<UIManager>();
+        if(_explosionAnimationSmartEnemy){
+            _explosionAnimationSmartEnemy.SetActive(false);
+        }
         initMe();
         if(!_player){
             Debug.LogError("Player script not available");
@@ -99,15 +127,17 @@ public class Enemy : MonoBehaviour
 
     void initMe(){
         _canFire = Time.time + Random.Range(0.5f, 1f);
-        _points = _isWave ? 10 : 5;
-        _speed = _isWave ? _speed / 2 : _speed;
-        _maxSpeed = _speed;
         Vector3 position = new Vector3(Random.Range(_limitLx, _limitRx), _initY, 0);
         transform.position = position;
-
         if(_isAgressive){
             gameObject.GetComponent<SpriteRenderer>().color =  new Color(255, 0, 255, 255);
         }
+
+        print("isAggressive:"+_isAgressive);
+        print("enemyShield:"+_enemyShield.activeSelf);
+        print("isWave:"+_isWave);
+        print("isSmartEnemy:"+_isSmartEnemy);
+        print("Init Enemy Speed:"+_speed);
     }
 
     void Fire(){
@@ -120,7 +150,7 @@ public class Enemy : MonoBehaviour
         enemyLaser.transform.parent = this.transform.parent;
     }
 
-     void FirePowerUp(){
+    void FirePowerUp(){
         if(_isDestroying){
             return;
         }
@@ -144,6 +174,8 @@ public class Enemy : MonoBehaviour
         }
     }
 
+
+
     void Update()
     {
         FirePowerUp();
@@ -160,15 +192,71 @@ public class Enemy : MonoBehaviour
         MoveMe();
     }
 
+    float UpdateEscapeDirection(){
+        GameObject[] lasers = GameObject.FindGameObjectsWithTag("Laser");
+        bool isRightEscape = false;
+        float minX = transform.position.x - 1f;
+        float maxX = transform.position.x + 1f;
+        GameObject hasCollision = null;
+        float offset = 1.5f;
+        float minDist = 1f;
+        float maxDist = 4.0f;
+        foreach(GameObject laser in lasers){
+            if( laser.transform.position.x > minX && laser.transform.position.x < maxX){
+                float distance = Vector3.Distance(laser.transform.position, transform.position);
+                hasCollision = distance > minDist && distance < maxDist ? laser : null;
+            }
+        }
+
+        if(!hasCollision){
+            return 0;
+        }
+
+        if(transform.position.x - offset> _limitLx && transform.position.x + offset < _limitRx){
+            isRightEscape = (Random.Range(0, 2) == 1);
+            return isRightEscape ? offset : -offset; // You can move to right or left
+        } 
+
+
+        if(transform.position.x - offset < _limitLx){
+            return offset; // Move to right
+        } 
+
+
+        if(transform.position.x + offset > _limitRx){
+            return -offset; // Move to left
+        } 
+
+        return 0;
+    }
+
     void MoveMe(){
         float speed = getMySpeed(_speed, _maxSpeed);
         Vector3 newPos = Vector3.down * speed * Time.deltaTime;
+        
+        if(_isSmartEnemy && !_isWave && _escapeDirection == 0){
+            _escapeDirection = UpdateEscapeDirection();
+        }
+
+        if(_escapeDirection > 0){
+            float newX = 0.1f;
+            _escapeDirection = _escapeDirection - newX >= 0 ? _escapeDirection - newX : 0;
+            newPos = new Vector3(newX, newPos.y, newPos.z);
+        }
+        
+        if(_escapeDirection < 0){
+            float newX = -0.1f;
+            _escapeDirection = _escapeDirection + 0.1f <= 0 ? _escapeDirection + 0.1f : 0;
+            newPos = new Vector3(newX, newPos.y, newPos.z);
+        }
+
         if(_isWave){
             Vector3 sinPos = Vector3.right * Mathf.Sin(Time.time * _frequency) * _magnitude;
             newPos = new Vector3(sinPos.x, newPos.y, newPos.z);
             transform.Translate(newPos);
             return;
         }
+
         if(_isAgressive && _player && transform.position.y + 2f > _player.transform.position.y){
             float distance = Vector3.Distance(_player.transform.position, transform.position);
             if(distance <= _agressiveDistance){
@@ -192,7 +280,7 @@ public class Enemy : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-
+        print(other.tag);
         if(_isDestroying){
             return;
         }
@@ -231,6 +319,21 @@ public class Enemy : MonoBehaviour
                 _player.OnHitMe();
             }
         }
+
+        if(_isDestroying && _explosionAnimationSmartEnemy && _isSmartEnemy){
+            if(_smartEnemyShip){
+                StartCoroutine("DestroySmartEnemy");
+            } else {
+                Debug.LogError("Smart Enemy Ship Container not available!");
+            }
+            
+        }
+    }
+
+    IEnumerator DestroySmartEnemy(){
+        _explosionAnimationSmartEnemy.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        _smartEnemyShip.SetActive(false);
     }
 
 }

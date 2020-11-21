@@ -8,6 +8,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemy;
     [SerializeField]
+    private GameObject _smartEnemy;
+    [SerializeField]
     private GameObject _asteroid;
     [SerializeField]
     private GameObject _superLaserPowerUp;
@@ -49,6 +51,7 @@ public class SpawnManager : MonoBehaviour
     }
     
     public void OnPlayerDeath(){
+        StopCoroutine("SmartEnemyRoutine");
         StopCoroutine("EnemyRoutine");
         StopCoroutine("BasicPowerUp");
         StopCoroutine("AdvancePowerUp");
@@ -56,6 +59,7 @@ public class SpawnManager : MonoBehaviour
     }
 
     public void initMe(){
+        // StartCoroutine("SmartEnemyRoutine");
         StartCoroutine("EnemyRoutine");
         StartCoroutine("BasicPowerUp");
         StartCoroutine("AdvancePowerUp");
@@ -63,21 +67,20 @@ public class SpawnManager : MonoBehaviour
 
     public void PlayLevel(int level){
         switch(level){
-            case 1:
+            case 1: //Asteroid + Shield + Aggressive
                 _gameLevel = 1;
                 StartCoroutine("AsteroidCoroutine");
             break;
-            case 2:
-                // start shield enemies and agressive enemy
+            case 2: 
                 _gameLevel = 2;
             break;     
-            case 3:
-                // start wave enemy
+            case 3: // Wave + Shield + Aggressive
                 _gameLevel = 3;
             break;   
-            case 4:
-                // increase enemy speed
+            case 4: // SmartEnemyRoutine + Increase Enemy Speed + Wave + Shield + Aggressive
                 _gameLevel = 4;
+                _spawnEnemyTime = 5f;
+                StartCoroutine("SmartEnemyRoutine");
             break;   
             case 5:
                 // play the boss
@@ -86,6 +89,7 @@ public class SpawnManager : MonoBehaviour
                 StopCoroutine("EnemyRoutine");
                 StopCoroutine("AdvancePowerUp");
                 StopCoroutine("AsteroidCoroutine");
+                StopCoroutine("SmartEnemyRoutine");
                 StartCoroutine("BossRoutine");
             break;               
         }
@@ -114,29 +118,48 @@ public class SpawnManager : MonoBehaviour
     }
 
     private IEnumerator EnemyRoutine(){
-        Debug.Log("isSpawningEnemy:"+isSpawningEnemy);
         yield return new WaitForSeconds(1f);
-        Debug.Log("isSpawningEnemy:"+isSpawningEnemy);
         while(isSpawningEnemy){
             GameObject newEnemy = Instantiate(_enemy);
             Enemy enemy = newEnemy.GetComponent<Enemy>();
             newEnemy.transform.parent = _enemiesContainer.transform;
-            Debug.Log("new Enemy");
-            print("_gameLevel"+_gameLevel);
-            if(_gameLevel == 2){
-                enemy.ShieldEnemy = true;
-                enemy.AggressiveEnemy = true;
-            } else if (_gameLevel == 3) {
-                enemy.ShieldEnemy = true;
-                enemy.AggressiveEnemy = true;
-                enemy.WaveEnemy = true;
-            } else if (_gameLevel == 4) {
-                enemy.ShieldEnemy = true;
-                enemy.AggressiveEnemy = true;
-                enemy.WaveEnemy = true;
-                enemy.Speed = enemy.Speed + 2;
+            enemy.Speed = 1.3f;
+            if(_gameLevel >= 1 && _gameLevel <= 2) { // Shield + Aggressive
+                enemy.Speed = 1.8f;
+                enemy.FireRate = 3f;
+                enemy.ShieldEnemy = Random.Range(0,2) == 1;
+                enemy.AggressiveEnemy = !enemy.ShieldEnemy ? Random.Range(0,2) == 1 : false;
+                print("EnemyRoutine>_gameLevel:"+_gameLevel);
+            } else if (_gameLevel == 3) { // Wave + Shield + Aggressive
+                enemy.Speed = 2.2f;
+                enemy.FireRate = 2.5f;
+                enemy.WaveEnemy = Random.Range(0.0f, 5.0f) > 3;
+                enemy.ShieldEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
+                enemy.AggressiveEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
+            } else if (_gameLevel == 4) { // Increase Enemy Speed + Wave + Shield + Aggressive
+                enemy.FireRate = 2.5f;
+                enemy.WaveEnemy = Random.Range(0.0f, 5.0f) > 3;
+                enemy.Speed = enemy.WaveEnemy ? 1f : 2.5f;
+                enemy.ShieldEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
+                enemy.AggressiveEnemy = !enemy.WaveEnemy ? Random.Range(0,2) == 1 : false;
             }
             
+            yield return new WaitForSeconds(_spawnEnemyTime);
+        }
+    }
+
+    private IEnumerator SmartEnemyRoutine(){
+        while(isSpawningEnemy){
+            GameObject newEnemy = Instantiate(_smartEnemy);
+            Enemy enemy = newEnemy.GetComponent<Enemy>();
+            newEnemy.transform.parent = _enemiesContainer.transform;
+            Debug.Log("new Smart Enemy");
+            enemy.WaveEnemy = false;
+            enemy.ShieldEnemy = false;
+            enemy.AggressiveEnemy = false;
+            enemy.SmartEnemy = true;
+            enemy.FireRate = 2.3f;
+            enemy.Speed = 1.8f;
             yield return new WaitForSeconds(_spawnEnemyTime);
         }
     }
